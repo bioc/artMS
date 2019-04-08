@@ -14,7 +14,7 @@ artmsProtein2SiteConversion(evidence_file, ref_proteome_file, output_file,
 \item{ref_proteome_file}{(char) The reference proteome used as database
 to search the \code{evidence.txt} file with MaxQuant. It will be used to map the
 modified peptide to the protein sequence and find the site location.
-Therefore, it does NOT need the MaxQuant's \code{Phospho (STY)Sites.txt}}
+Therefore, it does not use the MaxQuant's \code{Phospho (STY)Sites.txt}}
 
 \item{output_file}{(char) Output file name
 (\code{-sites-evidence.txt} recommended)}
@@ -31,7 +31,7 @@ Therefore, it does NOT need the MaxQuant's \code{Phospho (STY)Sites.txt}}
 \value{
 (file) Return a new evidence file with the \code{Proteins} column
 modified by adding the sequence site location(s) + postranslational
-modification(s) to the uniprot entry id.
+modification(s) to the uniprot entry / refseq id.
 
 Examples: \code{A34890_ph3}; \code{Q64890_ph24_ph456}; \code{Q64890_ub34_ub129_ub234};
 \code{Q64890_ac35}.
@@ -39,8 +39,24 @@ Examples: \code{A34890_ph3}; \code{Q64890_ph24_ph456}; \code{Q64890_ub34_ub129_u
 \description{
 It enables the site-specific quantification of PTMs by
 converting the \code{Proteins} column of the evidence file to an \code{Uniprot_PTM}
-notation. In this way, each of the modified peptides can be quantified
-independently across conditions
+or \code{RefSeq_PTM} notation.
+In this way, each of the modified peptides can be quantified
+independently across conditions.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+WARNING: we have detected a version of MaxQuant (1.6.3.4) outputs a`
+"Modified sequence" column of the evidence file that has two important
+changes for the annotation of phosphorylation:
+\itemize{
+\item Uses \code{p} instead of \code{(ph)}
+\item The modified residue (i.e. STY) is the residue on the left of the \code{p},
+instead of the residue to the right of \code{(ph)} as usual.
+These changes significantly affect the algorithm used by this artMS function
+to extract the PTM site information. We are working on debugging the issue
+and use an alternative function independent of the "Mofified sequence"
+column. If your MaxQuant version is affected, then the column \code{mod_sites} of
+the output \code{-mapping.txt} will have many NA values for peptides with \code{p}
+modifications (and no NA values should be present)
+}
 }
 \examples{
 # Testing warning if files are not submitted
